@@ -18,14 +18,11 @@ namespace OrganizationsAndEmployees.Controllers
             _context = context;
         }
 
-        // GET: Employees
         public async Task<IActionResult> Index()
         {
-            var appDbContext = _context.Employees.Include(e => e.Organization);
-            return View(await appDbContext.ToListAsync());
+            return View(await _context.Employees.ToListAsync());
         }
 
-        // GET: Employees/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -34,7 +31,6 @@ namespace OrganizationsAndEmployees.Controllers
             }
 
             var employee = await _context.Employees
-                .Include(e => e.Organization)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (employee == null)
             {
@@ -44,19 +40,14 @@ namespace OrganizationsAndEmployees.Controllers
             return View(employee);
         }
 
-        // GET: Employees/Create
         public IActionResult Create()
         {
-            ViewData["OrganizationId"] = new SelectList(_context.Organizations, "Id", "Id");
             return View();
         }
 
-        // POST: Employees/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,LastName,FirstName,MiddleName,DateOfBirth,PassportSeries,PassportNumber,OrganizationId")] Employee employee)
+        public async Task<IActionResult> Create([Bind("Id,LastName,FirstName,MiddleName,BirthDate,PassportSeries,PassportNumber")] Employee employee)
         {
             if (ModelState.IsValid)
             {
@@ -64,11 +55,9 @@ namespace OrganizationsAndEmployees.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["OrganizationId"] = new SelectList(_context.Organizations, "Id", "Id", employee.OrganizationId);
             return View(employee);
         }
 
-        // GET: Employees/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -81,16 +70,12 @@ namespace OrganizationsAndEmployees.Controllers
             {
                 return NotFound();
             }
-            ViewData["OrganizationId"] = new SelectList(_context.Organizations, "Id", "Id", employee.OrganizationId);
             return View(employee);
         }
 
-        // POST: Employees/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,LastName,FirstName,MiddleName,DateOfBirth,PassportSeries,PassportNumber,OrganizationId")] Employee employee)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,LastName,FirstName,MiddleName,BirthDate,PassportSeries,PassportNumber")] Employee employee)
         {
             if (id != employee.Id)
             {
@@ -117,11 +102,9 @@ namespace OrganizationsAndEmployees.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["OrganizationId"] = new SelectList(_context.Organizations, "Id", "Id", employee.OrganizationId);
             return View(employee);
         }
 
-        // GET: Employees/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -130,7 +113,6 @@ namespace OrganizationsAndEmployees.Controllers
             }
 
             var employee = await _context.Employees
-                .Include(e => e.Organization)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (employee == null)
             {
@@ -140,7 +122,6 @@ namespace OrganizationsAndEmployees.Controllers
             return View(employee);
         }
 
-        // POST: Employees/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)

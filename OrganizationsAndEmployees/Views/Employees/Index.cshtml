@@ -15,9 +15,9 @@
 <p>
     <a asp-action="Create">Create New</a>
 </p>
-    <p>
-        <a asp-controller="Home" asp-action="Index">Back to Home</a>
-    </p>
+<p>
+    <a asp-controller="Home" asp-action="Index">Back to Home</a>
+</p>
 <table class="table">
     <thead>
         <tr>
@@ -31,16 +31,13 @@
                 @Html.DisplayNameFor(model => model.MiddleName)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.DateOfBirth)
+                @Html.DisplayNameFor(model => model.BirthDate)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.PassportSeries)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.PassportNumber)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Organization)
             </th>
             <th></th>
         </tr>
@@ -58,16 +55,13 @@
                 @Html.DisplayFor(modelItem => item.MiddleName)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.DateOfBirth)
+                @Html.DisplayFor(modelItem => item.BirthDate)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.PassportSeries)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.PassportNumber)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Organization.Id)
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |

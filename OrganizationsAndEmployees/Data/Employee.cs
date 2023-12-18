@@ -6,10 +6,8 @@
         public string LastName { get; set; }
         public string FirstName { get; set; }
         public string MiddleName { get; set; }
-        public DateTime DateOfBirth { get; set; }
+        public DateTime BirthDate { get; set; }
         public string PassportSeries { get; set; }
         public string PassportNumber { get; set; }
-        public int OrganizationId { get; set; }
-        public Organization Organization { get; set; }
     }
 }
