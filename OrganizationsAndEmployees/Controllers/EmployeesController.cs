@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Globalization;
+using CsvHelper;
+using CsvHelper.Configuration;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using OrganizationsAndEmployees.Data;
 
@@ -135,6 +133,62 @@ namespace OrganizationsAndEmployees.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
+        public ActionResult ExportToCsv()
+        {
+            var data = _context.Employees.ToList();
+
+            var csvConfiguration = new CsvConfiguration(CultureInfo.InvariantCulture)
+            {
+                Delimiter = ";"
+            };
+            using (var memoryStream = new MemoryStream())
+            using (var streamWriter = new StreamWriter(memoryStream))
+            using (var csvWriter = new CsvWriter(streamWriter, csvConfiguration))
+            {
+                csvWriter.WriteRecords(data);
+                streamWriter.Flush();
+                return File(memoryStream.ToArray(), "text/csv", "exported_employees.csv");
+            }
+        }
+
+        public ActionResult ImportFromCsv(IFormFile file)
+        {
+            if (file != null && file.Length > 0)
+            {
+                using (var reader = new StreamReader(file.OpenReadStream()))
+                using (var csv = new CsvReader(reader, new CsvConfiguration(CultureInfo.InvariantCulture) { Delimiter = ";" }))
+                {
+                    var employees = csv.GetRecords<Employee>().ToList();
+
+                    foreach (var employee in employees)
+                    {
+                        if (!string.IsNullOrEmpty(employee.BirthDate.ToString("dd/MM/yyyy HH:mm:ss")))
+                        {
+                            if (DateTime.TryParseExact(employee.BirthDate.ToString("dd/MM/yyyy HH:mm:ss"), "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime birthDate))
+                            {
+                                employee.BirthDate = birthDate.Date;
+                            }
+                            else
+                            {
+                                Console.WriteLine($"Недопустимый формат даты рождения: {employee.BirthDate}");
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine("Дата рождения пуста или равна null");
+                        }
+                        employee.Id = 0;
+                    }
+
+                    _context.Employees.RemoveRange(_context.Employees);
+                    _context.Employees.AddRange(employees);
+                    _context.SaveChanges();
+                }
+            }
+            return RedirectToAction("Index");
+        }
+
+
 
         private bool EmployeeExists(int id)
         {

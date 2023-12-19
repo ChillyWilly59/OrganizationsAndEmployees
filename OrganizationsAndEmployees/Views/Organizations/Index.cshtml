@@ -12,55 +12,69 @@
     <title>Index</title>
 </head>
 <body>
-    
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
+
+    <p>
+        <a asp-action="Create">Create New</a>
+    </p>
+
+    <form method="post" enctype="multipart/form-data" asp-action="ImportFromCsv">
+        <input type="file" name="file" />
+        <button type="submit">Загрузить CSV</button>
+    </form>
+     <p>
+        <a asp-action="ExportToCsv">Export CSV</a>
+    </p>
+
+    @*p>
+        <a asp-controller="OrganizationsController" asp-action="ImportFromCsv">Import CSV</a>
+    </p> *@
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Name)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.INN)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.LegalAddress)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.ActualAddress)
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.INN)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.LegalAddress)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ActualAddress)
+                    </td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                        <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                        <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+
+    </table>
     <p>
         <a asp-controller="Home" asp-action="Index">Back to Home</a>
     </p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Name)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.INN)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.LegalAddress)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ActualAddress)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.INN)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.LegalAddress)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ActualAddress)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-       
-</table>
 </body>
 </html>

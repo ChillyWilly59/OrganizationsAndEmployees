@@ -12,12 +12,25 @@
     <title>Index</title>
 </head>
 <body>
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<p>
-    <a asp-controller="Home" asp-action="Index">Back to Home</a>
-</p>
+
+    <p>
+        <a asp-action="Create">Create New</a>
+    </p>
+    @using (Html.BeginForm("ImportFromCsv", "Employees", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+        @Html.AntiForgeryToken()
+
+        <div class="form-group">
+            <label for="file">Choose CSV file:</label>
+            <input type="file" name="file" id="file" class="form-control" required />
+        </div>
+
+        <button type="submit" class="btn btn-primary">Import</button>
+    }
+    <p>
+        <a asp-action="ExportToCsv">Export CSV</a>
+    </p>
+    
 <table class="table">
     <thead>
         <tr>
@@ -72,5 +85,9 @@
 }
     </tbody>
 </table>
+
+    <p>
+        <a asp-controller="Home" asp-action="Index">Back to Home</a>
+    </p>
 </body>
 </html>

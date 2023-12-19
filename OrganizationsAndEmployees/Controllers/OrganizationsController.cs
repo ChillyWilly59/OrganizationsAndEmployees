@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Globalization;
 using CsvHelper;
 using CsvHelper.Configuration;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using OrganizationsAndEmployees.Data;
 
@@ -126,9 +121,13 @@ namespace OrganizationsAndEmployees.Controllers
         }
         public ActionResult ExportToCsv()
         {
-            var data = _context.Organizations.ToList(); 
+            var data = _context.Organizations.ToList();
 
-            var csvConfiguration = new CsvConfiguration(CultureInfo.InvariantCulture);
+            var csvConfiguration = new CsvConfiguration(CultureInfo.InvariantCulture)
+            {
+                HasHeaderRecord = false,
+                Delimiter = ";"
+            };
             using (var memoryStream = new MemoryStream())
             using (var streamWriter = new StreamWriter(memoryStream))
             using (var csvWriter = new CsvWriter(streamWriter, csvConfiguration))
@@ -139,24 +138,45 @@ namespace OrganizationsAndEmployees.Controllers
             }
         }
 
-        [HttpPost]
-        public ActionResult ImportFromCsv(HttpPostedFileBase file)
+
+        public ActionResult ImportFromCsv(IFormFile file)
         {
-            if (file != null && file.ContentLength > 0)
+            if (file != null && file.Length > 0)
             {
-                using (var reader = new StreamReader(file.InputStream))
-                using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
+                using (var reader = new StreamReader(file.OpenReadStream()))
                 {
-                    var records = csv.GetRecords<Organization>().ToList();
+                    var lines = new List<string>();
+                    while (!reader.EndOfStream)
+                    {
+                        var line = reader.ReadLine();
+                        lines.Add(line);
+                    }
+
+                    var organizations = new List<Organization>();
+                    foreach (var line in lines)
+                    {
+                        var values = line.Split(';');
+                        if (values.Length == 5) 
+                        {
+                            var organization = new Organization
+                            {
+                                Name = values[1],
+                                INN = values[2],
+                                LegalAddress = values[3],
+                                ActualAddress = values[4]
+                            };
+                            organizations.Add(organization);
+                        }
+                    }
 
                     _context.Organizations.RemoveRange(_context.Organizations);
-                    _context.Organizations.AddRange(records);
+                    _context.Organizations.AddRange(organizations);
                     _context.SaveChanges();
                 }
             }
-
             return RedirectToAction("Index");
         }
+
 
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
