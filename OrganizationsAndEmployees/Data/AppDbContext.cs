@@ -11,5 +11,7 @@ namespace OrganizationsAndEmployees.Data
 
         public DbSet<Organization> Organizations { get; set; }
         public DbSet<Employee> Employees { get; set; }
+
+
     }
 }

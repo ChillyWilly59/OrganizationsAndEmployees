@@ -10,7 +10,21 @@ builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer
 
 var app = builder.Build();
 
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    var dbContext = services.GetRequiredService<AppDbContext>();
+    dbContext.Database.EnsureCreated(); 
+    dbContext.Database.Migrate(); 
+}
 
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    var dbContext = services.GetRequiredService<AppDbContext>();
+    var dataSeeder = new DataSeeder(dbContext);
+    dataSeeder.SeedData(50, 100);
+}
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
